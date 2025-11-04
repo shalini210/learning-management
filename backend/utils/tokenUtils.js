@@ -1,0 +1,14 @@
+const jwt = require("jsonwebtoken")
+const crypto = require("crypto")
+exports.generateAccessToken = (payload)=>
+{
+    return jwt.sign(payload,process.env.ACCESS_TOKEN_SECRET,{expiresIn:process.env.ACCESS_TOKEN_EXPIRES})
+}
+exports.generateRefreshToken = (payload)=>
+{
+    return jwt.sign(payload,process.env.REFRESH_TOKEN_SECRET,{expiresIn:process.env.REFRESH_TOKEN_EXPIRES})
+}
+exports.hashToken=(token)=>
+{
+    return crypto.createHash("sha256").update(token).digest("hex")
+}
