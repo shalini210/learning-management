@@ -4,6 +4,9 @@ const express = require("express")
 const authroute =require("./routes/authRoutes")
 const app = express();
 const auth = require("./middlewares/auth")
+const cors = require("cors")
+app.use(cors())
+
 app.use(express.json());
 app.use(express.urlencoded({extended:true}))
 app.use('/auth', authroute);
