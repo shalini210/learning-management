@@ -47,6 +47,36 @@ exports.signup = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+exports.verifyOtp = async(req,res)=>
+{
+  const {email,otp}=req.body;
+  let user = await User.findOne({email:email})
+  if(!user)
+  {
+    res.send({msg:"Email not registered"})
+  }
+  else
+  {
+    // res.send({msg:"Email present"})
+        if(otp== user.otp)
+        {
+         
+         let d= await User.updateOne({email:email},{$set:{verify:true}})
+         if(d.modifiedCount==1)
+         {
+          res.send({msg:"Email successfully verified "})
+         }
+         else
+         {
+          res.send({msg:"Already verfied email"})
+         }
+        }
+        else
+        {
+          res.send({msg:"invalid otp "})
+        }
+  }
+}
 exports.login = async(req,res)=>
 {
   const {username,password} = req.body
