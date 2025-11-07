@@ -46,7 +46,7 @@ exports.signup = async (req, res) => {
      in browser`
    // HTML body
   });
-    res.status(201).json({ message: 'User registered',link:"http://localhost:5173/verifyotp/"+email, userId: newUser._id });
+    res.status(201).json({ message: 'User registered', userId: newUser._id });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
