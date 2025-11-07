@@ -5,13 +5,14 @@ import './App.css'
 import Signup from './components/auth/Signup'
 import { Routes,Route } from 'react-router-dom'
 import Verifyotp from './components/auth/Verifyotp'
-
+import Login from './components/auth/Login'
 function App() {
   return (
     <>
     <Routes>
       <Route path="/signup" element={<Signup></Signup>}></Route>
         <Route path="/verifyotp/:email" element={<Verifyotp></Verifyotp>}></Route>
+        <Route path='/login' element={<Login></Login>}></Route>
     </Routes>
     
     </>

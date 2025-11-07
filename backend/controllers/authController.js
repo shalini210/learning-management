@@ -39,10 +39,14 @@ exports.signup = async (req, res) => {
     const info = await transporter.sendMail({
     to: email,
     subject: "OTP For Verification",
-    text: "Please enter " +otp +"to verify your email", // plain‑text body
+    // text: "Please open link enter " +otp +"to verify your email", // plain‑text body
+    html: `<a href="http://localhost:5173/verifyotp/${email}">Click here </a>
+     to verify and Enter OTP: ${otp}
+     if link is not working paste "http://localhost:5173/verifyotp/${email}"
+     in browser`
    // HTML body
   });
-    res.status(201).json({ message: 'User registered', userId: newUser._id });
+    res.status(201).json({ message: 'User registered',link:"http://localhost:5173/verifyotp/"+email, userId: newUser._id });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

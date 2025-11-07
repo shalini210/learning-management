@@ -1,6 +1,8 @@
 import React, { useRef } from 'react';
 import axios from "axios"
+import { useNavigate } from 'react-router-dom';
 export default function Signup() {
+  let navigate = useNavigate()
   const nameRef = useRef();
   const emailRef = useRef();
   const passwordRef = useRef();
@@ -18,7 +20,12 @@ const API_URL = import.meta.env.VITE_API_URL
     };
     console.log(formData);
      await  axios.post(API_URL+"/auth/signup",formData)
-     .then((res)=>console.log(res))
+     .then((res)=>{console.log(res)
+      if((res.data).message=="User registered")
+      {
+navigate("/verifyOtp/"+emailRef.current.value)
+      }
+     })
      .catch((err)=>console.log(err))
     // Add your form submission logic here
   };
