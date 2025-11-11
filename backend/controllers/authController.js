@@ -83,28 +83,32 @@ exports.verifyOtp = async(req,res)=>
 }
 exports.login = async(req,res)=>
 {
-  const {username,password} = req.body
-  let user = await  User.findOne({username})
+  const {email,password} = req.body
+  let user = await  User.findOne({email})
   if(!user){
-    return res.status(500).json({message:"username not found"})
+    return res.json({message:"email  not found"})
   }
+  if(!user.verify)
+  {
+    return res.json({msg:"Email not Verfied"})
+  }
+
   const ispwd =await bcrypt.compare(password,user.password)
   console.log(ispwd)
   if(ispwd)
   {
     // res.send("valid user")
-    const payload = {userId : user._id,username:user.username}
+    const payload = {userId : user._id,user:user}
     const accessToken = tokenUtils.generateAccessToken(payload)
     const refreshToken = tokenUtils.generateRefreshToken(payload)
-
     user.refreshTokens.push({tokenHash:tokenUtils.hashToken(refreshToken),
       createdAt:new Date()})
     await user.save()
-    res.json({accessToken})
+    res.json({accessToken:accessToken,user:user,message:"success"})
   }
   else
   {
-  return res.status(500).json({message:"Invalid password"})    
+  return res.json({message:"Invalid password"})    
   }
 }
 // // ✅ Login
