@@ -10,5 +10,6 @@ router.post('/verifyOtp', authController.verifyOtp);
 router.post('/login', authController.login);
 // router.post('/token', refreshToken);
 // router.post('/logout', logout);
-
+router.post('/profile', authController.addUserProfile);
+router.put('/profile/:userId', authController.updateUserProfile);
 module.exports = router;

@@ -1,5 +1,6 @@
 const bcrypt = require('bcryptjs');
 const transporter = require("../middlewares/transporter")
+const UserProfile = require("../models/UserProfileModel")
 // const jwt = require('jsonwebtoken');
 const User = require('../models/UserModel');
 // const { generateAccessToken, generateRefreshToken, hashToken } = require('../utils/tokenUtils');
@@ -111,6 +112,83 @@ exports.login = async(req,res)=>
   return res.json({message:"Invalid password"})    
   }
 }
+
+
+
+// ✅ Add User Profile
+exports.addUserProfile = async (req, res) => {
+  try {
+    const { userId, fullName, phone, dateOfBirth, gender, bio, role, profilePicture } = req.body;
+
+    // check if user exists
+    const userExists = await User.findById(userId);
+    if (!userExists) {
+      return res.json({ message: 'User not found' });
+    }
+
+    // prevent duplicate profile
+    const existingProfile = await UserProfile.findOne({ userId });
+    if (existingProfile) {
+      return res.json({ message: 'Profile already exists' });
+    }
+
+    const profile = new UserProfile({
+      userId,
+      fullName,
+      phone,
+      dateOfBirth,
+      gender,
+      bio,
+      role,
+      profilePicture,
+      joinDate: new Date(),
+      status: 'active',
+    });
+
+    await profile.save();
+    res.json({ message: 'Profile created successfully', profile });
+  } catch (error) {
+    res.json({ message: error.message });
+  }
+};
+
+// ✅ Update User Profile
+exports.updateUserProfile = async (req, res) => {
+  try {
+    const { userId } = req.params; // assume userId in URL (e.g., /profile/:userId)
+    const updates = req.body; // contains fields to update
+
+    const profile = await UserProfile.findOne({ userId });
+    if (!profile) {
+      return res.json({ message: 'Profile not found' });
+    }
+
+    // update allowed fields only
+    const allowedFields = [
+      'profilePicture',
+      'fullName',
+      'phone',
+      'dateOfBirth',
+      'gender',
+      'bio',
+      'role',
+      'status'
+    ];
+
+    allowedFields.forEach((field) => {
+      if (updates[field] !== undefined) {
+        profile[field] = updates[field];
+      }
+    });
+
+    await profile.save();
+    res.json({ message: 'Profile updated successfully', profile });
+  } catch (error) {
+    res.json({ message: error.message });
+  }
+};
+
+
 // // ✅ Login
 // exports.login = async (req, res) => {
 //   const { username, password } = req.body;

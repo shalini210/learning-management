@@ -1,9 +1,12 @@
 import React, { useRef } from "react";
 import axios from "axios";
+import { setUserAction } from "../../slices/UserSlice";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 export default function Login() {
   const emailRef = useRef(null);
   const passwordRef = useRef(null);
+  const dispatch = useDispatch()
 let navigate = useNavigate()
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -15,7 +18,8 @@ await  axios.post(API_URL+"/auth/login",formData)
      .then((res)=>{console.log(res)
       if((res.data).message=="success")
       {
-navigate("/userHome")
+dispatch(setUserAction(res.data.user))
+navigate("/userProfile")
       }
       else
       {
