@@ -104,8 +104,60 @@ exports.login = async(req,res)=>
     const refreshToken = tokenUtils.generateRefreshToken(payload)
     user.refreshTokens.push({tokenHash:tokenUtils.hashToken(refreshToken),
       createdAt:new Date()})
+
     await user.save()
-    res.json({accessToken:accessToken,user:user,message:"success"})
+
+        const data = await User.aggregate([
+      {
+        $match: { email: email } // find user by email
+      },
+      {
+        $lookup: {
+          from: 'userprofiles',          // collection name of UserProfileModel
+          localField: '_id',             // field in User
+          foreignField: 'userId',        // field in UserProfile
+          as: 'profile'                  // result alias
+        }
+      },
+      {
+        $unwind: {
+          path: '$profile',
+          preserveNullAndEmptyArrays: true // include users even if no profile
+        }
+      },
+        {
+    // ✅ explicitly include ALL fields from both collections
+    $project: {
+      _id: 1,
+      email: 1,
+      name: 1,
+      password: 1,
+      verify: 1,
+      role: 1,
+      otp: 1,
+      refreshTokens: 1,
+      createdAt: 1,
+      updatedAt: 1,
+
+      // Include all profile fields
+      "profile._id": 1,
+      "profile.userId": 1,
+      "profile.profilePicture": 1,
+      "profile.fullName": 1,
+      "profile.phone": 1,
+      "profile.dateOfBirth": 1,
+      "profile.gender": 1,
+      "profile.bio": 1,
+      "profile.role": 1,
+      "profile.joinDate": 1,
+      "profile.status": 1,
+      "profile.createdAt": 1,
+      "profile.updatedAt": 1
+    }
+  }
+    ]);
+
+    res.json({accessToken:accessToken,user:data,message:"success"})
   }
   else
   {
@@ -118,7 +170,7 @@ exports.login = async(req,res)=>
 // ✅ Add User Profile
 exports.addUserProfile = async (req, res) => {
   try {
-    const { userId, fullName, phone, dateOfBirth, gender, bio, role, profilePicture } = req.body;
+    const { userId, fullName, phone, dateOfBirth, gender, bio} = req.body;
 
     // check if user exists
     const userExists = await User.findById(userId);
@@ -139,8 +191,7 @@ exports.addUserProfile = async (req, res) => {
       dateOfBirth,
       gender,
       bio,
-      role,
-      profilePicture,
+      
       joinDate: new Date(),
       status: 'active',
     });

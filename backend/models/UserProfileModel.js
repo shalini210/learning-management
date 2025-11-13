@@ -32,11 +32,7 @@ const userProfileSchema = new mongoose.Schema(
       type: String,
       maxlength: 500,
     },
-    role: {
-      type: String,
-      enum: ['student', 'teacher', 'admin'],
-      required: true,
-    },
+    
     joinDate: {
       type: Date,
       default: Date.now,

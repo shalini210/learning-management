@@ -19,6 +19,8 @@ const API_URL = import.meta.env.VITE_API_URL
       role: roleRef.current.value,
     };
     console.log(formData);
+    
+    
      await  axios.post(API_URL+"/auth/signup",formData)
      .then((res)=>{console.log(res)
       if((res.data).message=="User registered")
